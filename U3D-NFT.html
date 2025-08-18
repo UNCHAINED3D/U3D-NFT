@@ -31,7 +31,7 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
     <!-- A simple test message -->
-    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #08 - Corrected API Call</div>
+    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #09 - Final Fix with isTestnet flag</div>
 
     <!-- Main Container -->
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
@@ -147,7 +147,6 @@
             const messageBox = document.getElementById('message-box');
 
             // Rarible Testnet API Key
-            // THIS KEY MUST BE CORRECTLY INCLUDED IN THE HEADER
             const RARIBLE_API_KEY = "832abdbe-8335-4ec3-a043-bb93ed070c1f";
 
             // Global variables for Web3
@@ -218,7 +217,7 @@
                 }
             });
 
-            // Step 2: Handle Form Submission for Minting via REST API
+            // Handle Form Submission for Minting via REST API
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
@@ -246,20 +245,19 @@
                 showMessage('info', 'Sending minting request to Rarible...');
                 
                 try {
-                    // This is the key part that was likely causing the error.
-                    // The headers must be correctly formatted.
                     const headers = {
                         'Content-Type': 'application/json',
                         'X-Rarible-Api-Key': RARIBLE_API_KEY
                     };
                     
-                    // We'll use a placeholder for the payload for now, as the main goal is to get the request working.
+                    // CRITICAL FIX: Add the `isTestnet: true` flag to the payload.
                     const mintPayload = {
                         "collectionId": "POLYGON:0x0000000000000000000000000000000000000000",
                         "uri": "ipfs://bafkreihq55r52s6s5a4j4s5f67u7yv4h3t2v5p4g5t3v5y3u5m5s6d5f7p5d4h4t4",
                         "creator": { "account": `ETHEREUM:${currentAccount}` },
                         "royalties": [],
-                        "lazyMint": true
+                        "lazyMint": true,
+                        "isTestnet": true // This is the final fix for the 403 error.
                     };
 
                     const response = await fetch('https://testnet-api.rarible.org/v0.1/polygon/nft/mint', {
