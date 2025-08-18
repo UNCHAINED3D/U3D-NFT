@@ -31,7 +31,7 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
     <!-- A simple test message -->
-    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #04</div>
+    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #last</div>
 
     <!-- Main Container -->
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
@@ -130,7 +130,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // UI Elements
             const mainPage = document.getElementById('main-page');
             const createNftPage = document.getElementById('create-nft-page');
             const connectWalletButton = document.getElementById('connect-wallet-button');
@@ -142,14 +141,9 @@
             const fileNameDisplay = document.getElementById('file-name');
             const mintButton = document.getElementById('mint-button');
             const messageBox = document.getElementById('message-box');
-
-            // Rarible Testnet API Key
             const RARIBLE_API_KEY = "6a682c4d-4b3a-4cc3-99c9-591e49ab4469";
-
-            // Global variable for current account
             let currentAccount = null;
 
-            // Page navigation functions
             function showMainPage() {
                 mainPage.classList.remove('hidden');
                 createNftPage.classList.add('hidden');
@@ -158,47 +152,35 @@
             function showCreatePage() {
                 mainPage.classList.add('hidden');
                 createNftPage.classList.remove('hidden');
-                messageBox.classList.add('hidden'); // Clear previous messages
+                messageBox.classList.add('hidden');
             }
 
-            // Event Listeners for Page Navigation
             createNftButton.addEventListener('click', () => {
-                if (currentAccount) {
-                    showCreatePage();
-                } else {
-                    showMessage('info', 'Please connect your wallet first to create an NFT.');
-                }
+                if (currentAccount) showCreatePage();
+                else showMessage('info', 'Please connect your wallet first.');
             });
 
-            backButton.addEventListener('click', () => {
-                showMainPage();
-            });
+            backButton.addEventListener('click', showMainPage);
 
-            // Handle Wallet Connection
             async function connectWallet() {
-                if (!window.ethereum) {
-                    showMessage('error', 'No Ethereum provider found. Please install a wallet like MetaMask.');
-                    return;
-                }
-                
+                if (!window.ethereum) return showMessage('error', 'No Ethereum provider found.');
+
                 try {
-                    showMessage('info', 'Connecting to your wallet...');
+                    showMessage('info', 'Connecting to wallet...');
                     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     currentAccount = accounts[0];
-                    walletStatus.textContent = `Connected: ${currentAccount.substring(0, 6)}...${currentAccount.substring(currentAccount.length - 4)}`;
+                    walletStatus.textContent = `Connected: ${currentAccount.substring(0,6)}...${currentAccount.substring(currentAccount.length-4)}`;
                     walletStatus.classList.remove('hidden');
                     connectWalletButton.classList.add('hidden');
-                    showMessage('success', 'Wallet successfully connected!');
-
-                } catch (error) {
-                    console.error('User rejected wallet connection or no provider found', error);
-                    showMessage('error', 'Failed to connect wallet. Please ensure you have a wallet extension installed and try again.');
+                    showMessage('success', 'Wallet connected!');
+                } catch (err) {
+                    console.error('Wallet connection error:', err);
+                    showMessage('error', 'Failed to connect wallet.');
                 }
             }
 
             connectWalletButton.addEventListener('click', connectWallet);
 
-            // Listen for file selection and update the file name display
             fileInput.addEventListener('change', () => {
                 if (fileInput.files.length > 0) {
                     fileNameDisplay.textContent = fileInput.files[0].name;
@@ -211,167 +193,105 @@
                 }
             });
 
-            // Handle Form Submission for Minting via REST API
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                if (!currentAccount) { showMessage('error','Wallet not connected'); resetFormState(); return; }
 
-                if (!currentAccount) {
-                    showMessage('error', 'Wallet not connected. Please refresh and try again.');
-                    resetFormState();
-                    return;
-                }
-                
-                // UI state change
                 mintButton.disabled = true;
                 mintButton.textContent = 'Minting...';
-                mintButton.classList.add('bg-blue-400', 'cursor-not-allowed');
-                messageBox.innerHTML = '';
+                mintButton.classList.add('bg-blue-400','cursor-not-allowed');
                 messageBox.classList.add('hidden');
 
                 const file = fileInput.files[0];
+                if (!file) { showMessage('error','Select a file to mint'); resetFormState(); return; }
 
-                if (!file) {
-                    showMessage('error', 'Please select a file to mint.');
-                    resetFormState();
-                    return;
-                }
+                showMessage('info','Requesting wallet signature...');
 
-                showMessage('info', 'Requesting wallet signature for the minting transaction...');
-                
                 try {
-                    // 1. Define the EIP-712 structured data
-                    const domain = {
-                        name: "Rarible Protocol",
-                        version: "3",
-                        chainId: 80002, // Polygon Testnet
-                    };
-
+                    const domain = { name:"Rarible Protocol", version:"3", chainId:80002 };
                     const types = {
-                        Part: [
-                            { name: "account", type: "address" },
-                            { name: "value", type: "uint96" },
-                        ],
-                        Royalty: [
-                            { name: "account", type: "address" },
-                            { name: "value", type: "uint92" },
-                        ],
-                        MintAndTransfer: [
-                            { name: "user", type: "address" },
-                            { name: "creator", type: "Part" },
-                            { name: "collectionId", type: "bytes32" },
-                            { name: "uri", type: "string" },
-                            { name: "royalties", type: "Royalty[]" },
-                        ],
+                        Part:[{name:"account",type:"address"},{name:"value",type:"uint96"}],
+                        Royalty:[{name:"account",type:"address"},{name:"value",type:"uint92"}],
+                        MintAndTransfer:[
+                            {name:"user",type:"address"},
+                            {name:"creator",type:"Part"},
+                            {name:"collectionId",type:"bytes32"},
+                            {name:"uri",type:"string"},
+                            {name:"royalties",type:"Royalty[]"},
+                        ]
                     };
-
-                    // 2. Create the message to be signed
                     const message = {
-                        user: currentAccount,
-                        creator: { account: currentAccount, value: 10000 },
-                        collectionId: "0x825b0e01701545ca4eb0d582e7188ae948701dd4", // Correct testnet Polygon collection ID
-                        uri: "ipfs://bafkreihq55r52s6s5a4j4s5f67u7yv4h3t2v5p4g5t3v5y3u5m5s6d5f7p5d4h4t4",
-                        royalties: [],
+                        user:currentAccount,
+                        creator:{account:currentAccount,value:10000},
+                        collectionId:"0x825b0e01701545ca4eb0d582e7188ae948701dd4",
+                        uri:"ipfs://bafkreihq55r52s6s5a4j4s5f67u7yv4h3t2v5p4g5t3v5y3u5m5s6d5f7p5d4h4t4",
+                        royalties:[]
                     };
 
-                    // 3. Request the signature from the wallet
                     const signature = await window.ethereum.request({
-                        method: "eth_signTypedData_v4",
-                        params: [currentAccount, JSON.stringify({ types, domain, primaryType: "MintAndTransfer", message })],
+                        method:"eth_signTypedData_v4",
+                        params:[currentAccount, JSON.stringify({types,domain,primaryType:"MintAndTransfer",message})]
                     });
-                    
-                    showMessage('info', 'Signature received. Sending minting request to Rarible...');
 
-                    // 4. Construct the final payload with the signature
+                    showMessage('info','Signature received. Sending mint request...');
+
                     const mintPayload = {
-                        "@type": "MINT_AND_TRANSFER",
-                        collectionId: "POLYGON:0x825b0e01701545ca4eb0d582e7188ae948701dd4",
-                        creator: { account: `POLYGON:${currentAccount}` },
-                        uri: "ipfs://bafkreihq55r52s6s5a4j4s5f67u7yv4h3t2v5p4g5t3v5y3u5m5s6d5f7p5d4h4t4",
-                        royalties: [],
-                        isTestnet: true,
-                        signatures: [signature],
+                        "@type":"MINT_AND_TRANSFER",
+                        collectionId:`POLYGON:${message.collectionId}`,
+                        creator:{account:`POLYGON:${currentAccount}`},
+                        uri:message.uri,
+                        royalties:[],
+                        isTestnet:true,
+                        signatures:[signature]
                     };
 
-                    const headers = {
-                        "Content-Type": "application/json",
-                        "X-API-KEY": RARIBLE_API_KEY
-                    };
-                    
-                    const response = await fetch('https://testnet-api.rarible.org/v0.1/nft/mint', {
-                        method: 'POST',
-                        headers: headers,
-                        body: JSON.stringify(mintPayload)
+                    const response = await fetch('https://testnet-api.rarible.org/v0.1/nft/mint',{
+                        method:'POST',
+                        headers:{
+                            "Content-Type":"application/json",
+                            "X-API-KEY":RARIBLE_API_KEY
+                        },
+                        body:JSON.stringify(mintPayload)
                     });
 
-                    // Check for a successful response from the API
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.message || 'API request failed');
-                    }
-                    
-                    const mintResult = await response.json();
-                    
-                    showMessage('success', `NFT Minting request submitted! Please check your wallet for a pending transaction. Mint Result: ${JSON.stringify(mintResult)}`);
-                    
-                } catch (error) {
+                    // --- DETAILED LOGGING ---
+                    console.log('HTTP Status:', response.status);
+                    console.log('HTTP Status Text:', response.statusText);
+                    const text = await response.text();
+                    console.log('Response Body:', text);
+
+                    let mintResult;
+                    try { mintResult = JSON.parse(text); } catch(err) { mintResult = text; }
+
+                    if (!response.ok) throw new Error(text || 'Minting failed');
+
+                    showMessage('success',`NFT Minting request submitted! Mint Result: ${JSON.stringify(mintResult)}`);
+
+                } catch(error) {
                     console.error('Minting failed:', error);
-                    showMessage('error', `Minting failed. Error: ${error.message || 'Unknown error'}. Check your browser's console for more details.`);
+                    showMessage('error',`Minting failed. Check console for details: ${error.message}`);
                 } finally {
                     resetFormState();
                 }
             });
 
-            /**
-             * Resets the button and form state after the operation.
-             */
-            function resetFormState() {
+            function resetFormState(){
                 mintButton.disabled = false;
                 mintButton.textContent = 'Mint NFT';
-                mintButton.classList.remove('bg-blue-400', 'cursor-not-allowed');
+                mintButton.classList.remove('bg-blue-400','cursor-not-allowed');
             }
 
-            /**
-             * Displays a message to the user.
-             * @param {'success'|'error'|'info'} type The type of message.
-             * @param {string} message The message content.
-             */
-            function showMessage(type, message) {
+            function showMessage(type,message){
                 messageBox.classList.remove('hidden');
-                let colorClass = '';
-                switch (type) {
-                    case 'success':
-                        colorClass = 'bg-green-100 border-green-400 text-green-700';
-                        break;
-                    case 'error':
-                        colorClass = 'bg-red-100 border-red-400 text-red-700';
-                        break;
-                    case 'info':
-                        colorClass = 'bg-blue-100 border-blue-400 text-blue-700';
-                        break;
+                let colorClass='';
+                switch(type){
+                    case'success': colorClass='bg-green-100 border-green-400 text-green-700'; break;
+                    case'error': colorClass='bg-red-100 border-red-400 text-red-700'; break;
+                    case'info': colorClass='bg-blue-100 border-blue-400 text-blue-700'; break;
                 }
-                messageBox.innerHTML = `
-                    <div class="p-4 rounded-lg border ${colorClass}">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <!-- Icon based on type -->
-                                ${type === 'success' ? `<svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>` : ''}
-                                ${type === 'error' ? `<svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>` : ''}
-                                ${type === 'info' ? `<svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>` : ''}
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium">${message}</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                messageBox.innerHTML=`<div class="border-l-4 p-4 ${colorClass}">${message}</div>`;
             }
         });
     </script>
 </body>
 </html>
-
-
-
-
-
-
