@@ -126,7 +126,7 @@
     </div>
 
     <!-- Rarible SDK and Web3 Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/@rarible/sdk@latest/dist/browser/index.js"></script>
+    <script src="https://unpkg.com/@rarible/sdk@latest/dist/browser.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 
     <script>
@@ -183,6 +183,7 @@
                 if (window.ethereum) {
                     try {
                         showMessage('info', 'Connecting to your wallet...');
+                        // Request connection to the user's wallet
                         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                         currentAccount = accounts[0];
                         walletStatus.textContent = `Connected: ${currentAccount.substring(0, 6)}...${currentAccount.substring(currentAccount.length - 4)}`;
@@ -192,8 +193,8 @@
 
                         web3Instance = new Web3(window.ethereum);
                         const { createRaribleSdk } = window.RaribleSdk;
-                        // Changed from "prod" to "testnet" for testing purposes
-                        raribleSdk = createRaribleSdk(window.ethereum, "testnet"); 
+                        // Initialized SDK for Polygon Amoy testnet
+                        raribleSdk = createRaribleSdk(window.ethereum, "polygon_amoy");
 
                     } catch (error) {
                         console.error('User rejected wallet connection or no provider found', error);
@@ -254,9 +255,8 @@
                     //    upload method to get a real URI.
                     const ipfsUri = 'ipfs://bafkreihq55r52s6s5a4j4s5f67u7yv4h3t2v5p4g5t3v5y3u5m5s6d5f7p5d4h4t4'; // A placeholder URI
                     
-                    // This is a known ERC-721 contract on the Sepolia testnet.
-                    // You would replace this with your own collection's contract address.
-                    const collectionAddress = "ETHEREUM:0x301D39D321F5a4A061B4d754714D23951F10e30d";
+                    // This is a known ERC-721 contract on the Polygon Amoy testnet.
+                    const collectionAddress = "POLYGON:0xB51240161a0A0B59a4413e1171853b0e1eE5e966";
 
                     showMessage('info', 'Waiting for wallet confirmation to mint the NFT...');
 
@@ -269,7 +269,7 @@
                     // 3. Wait for the transaction to be mined
                     const transactionHash = await mintResult.transaction.wait();
                     
-                    showMessage('success', `NFT Minted Successfully! Transaction Hash: <a href="https://sepolia.etherscan.io/tx/${transactionHash}" target="_blank" class="font-bold underline">${transactionHash.substring(0, 6)}...${transactionHash.substring(transactionHash.length - 4)}</a>`);
+                    showMessage('success', `NFT Minted Successfully! Transaction Hash: <a href="https://amoy.polygonscan.com/tx/${transactionHash}" target="_blank" class="font-bold underline">${transactionHash.substring(0, 6)}...${transactionHash.substring(transactionHash.length - 4)}</a>`);
 
                 } catch (error) {
                     console.error('Minting failed:', error);
