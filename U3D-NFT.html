@@ -132,7 +132,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Your Rarible API key goes here:
-            const RARIBLE_API_KEY = "832abdbe-8335-4ec3-a043-bb93ed070c1f"; // <-- PASTE YOUR API KEY HERE
+            const RARIBLE_API_KEY = ""; // <-- PASTE YOUR API KEY HERE
 
             // UI Elements
             const mainPage = document.getElementById('main-page');
@@ -247,32 +247,29 @@
                 showMessage('info', 'Processing your NFT metadata and file upload...');
                 
                 try {
-                    // --- Rarible SDK Minting Flow (Simulated) ---
-
-                    // 1. Upload file to IPFS (Rarible SDK handles this)
-                    // The SDK has methods to upload files and metadata, like:
-                    // const uri = await raribleSdk.nft.uploadMetadata(metaData);
-                    showMessage('info', 'Uploading file and metadata to IPFS...');
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    const ipfsUri = 'ipfs://fake_ipfs_hash_for_your_asset';
-
-                    // 2. Prepare and send the minting transaction
-                    // The SDK's minting method would look something like this:
-                    // const mintResult = await raribleSdk.nft.mint({
-                    //   collectionId: 'ETHEREUM:0x...your-collection-address',
-                    //   uri: ipfsUri,
-                    //   tokenId: '1', // Or use a unique ID
-                    // });
-                    // const transaction = mintResult.transaction;
-                    // const txHash = await transaction.wait();
-
-                    showMessage('info', 'Waiting for wallet confirmation and blockchain transaction...');
-                    await new Promise(resolve => setTimeout(resolve, 4000));
-
-                    // Simulation of a successful transaction
-                    const transactionHash = '0x' + Math.random().toString(16).substring(2, 12) + '...';
+                    // --- REAL Rarible SDK Minting Flow ---
                     
-                    showMessage('success', `NFT Minted Successfully! Transaction Hash: <a href="#" class="font-bold underline">${transactionHash}</a>`);
+                    // 1. We will use a dummy IPFS URI here. In a real-world app, you would
+                    //    upload the file and metadata using a service like Pinata or the Rarible SDK's
+                    //    upload method to get a real URI.
+                    const ipfsUri = 'ipfs://bafkreihq55r52s6s5a4j4s5f67u7yv4h3t2v5p4g5t3v5y3u5m5s6d5f7p5d4h4t4'; // A placeholder URI
+                    
+                    // This is a known ERC-721 contract on the Sepolia testnet.
+                    // You would replace this with your own collection's contract address.
+                    const collectionAddress = "ETHEREUM:0x301D39D321F5a4A061B4d754714D23951F10e30d";
+
+                    showMessage('info', 'Waiting for wallet confirmation to mint the NFT...');
+
+                    // 2. Call the Rarible SDK's mint method
+                    const mintResult = await raribleSdk.nft.mint({
+                        collectionId: collectionAddress,
+                        uri: ipfsUri,
+                    });
+
+                    // 3. Wait for the transaction to be mined
+                    const transactionHash = await mintResult.transaction.wait();
+                    
+                    showMessage('success', `NFT Minted Successfully! Transaction Hash: <a href="https://sepolia.etherscan.io/tx/${transactionHash}" target="_blank" class="font-bold underline">${transactionHash.substring(0, 6)}...${transactionHash.substring(transactionHash.length - 4)}</a>`);
 
                 } catch (error) {
                     console.error('Minting failed:', error);
