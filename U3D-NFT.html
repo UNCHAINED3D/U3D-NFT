@@ -131,6 +131,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Your Rarible API key goes here:
+            const RARIBLE_API_KEY = "832abdbe-8335-4ec3-a043-bb93ed070c1f"; // <-- PASTE YOUR API KEY HERE
+
             // UI Elements
             const mainPage = document.getElementById('main-page');
             const createNftPage = document.getElementById('create-nft-page');
@@ -189,7 +192,8 @@
 
                         web3Instance = new Web3(window.ethereum);
                         const { createRaribleSdk } = window.RaribleSdk;
-                        raribleSdk = createRaribleSdk(window.ethereum, "prod"); 
+                        // Changed from "prod" to "testnet" for testing purposes
+                        raribleSdk = createRaribleSdk(window.ethereum, "testnet"); 
 
                     } catch (error) {
                         console.error('User rejected wallet connection or no provider found', error);
