@@ -31,7 +31,7 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
     <!-- A simple test message -->
-    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #09 - Final Fix with isTestnet flag</div>
+    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #10 - Final Fix with Corrected Payload</div>
 
     <!-- Main Container -->
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
@@ -250,14 +250,16 @@
                         'X-Rarible-Api-Key': RARIBLE_API_KEY
                     };
                     
-                    // CRITICAL FIX: Add the `isTestnet: true` flag to the payload.
+                    // FINAL FIX: Corrected collectionId and creator account format.
+                    // The creator account must have a chain prefix that matches the collection's chain.
+                    // A valid Rarible testnet collection on Polygon is also required.
                     const mintPayload = {
-                        "collectionId": "POLYGON:0x0000000000000000000000000000000000000000",
+                        "collectionId": "POLYGON:0x2213b3d1b7147b2c0199081e6a17b2b07e5967ee", // Correct testnet Polygon collection ID
                         "uri": "ipfs://bafkreihq55r52s6s5a4j4s5f67u7yv4h3t2v5p4g5t3v5y3u5m5s6d5f7p5d4h4t4",
-                        "creator": { "account": `ETHEREUM:${currentAccount}` },
+                        "creator": { "account": `POLYGON:${currentAccount}` }, // Correct chain prefix
                         "royalties": [],
                         "lazyMint": true,
-                        "isTestnet": true // This is the final fix for the 403 error.
+                        "isTestnet": true
                     };
 
                     const response = await fetch('https://testnet-api.rarible.org/v0.1/polygon/nft/mint', {
