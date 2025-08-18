@@ -31,7 +31,7 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
     <!-- A simple test message -->
-    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #04</div>
+    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #05</div>
 
     <!-- Main Container -->
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
@@ -128,8 +128,7 @@
         </div>
     </div>
 
-    <!-- Rarible SDK and Web3 Libraries -->
-    <script src="https://unpkg.com/@rarible/sdk@latest/dist/browser.js"></script>
+    <!-- Web3 Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 
     <script>
@@ -151,9 +150,8 @@
             // This is the key provided by the user and should be included in authenticated requests.
             const RARIBLE_API_KEY = "832abdbe-8335-4ec3-a043-bb93ed070c1f";
 
-            // Global variables for Web3 and Rarible SDK
+            // Global variables for Web3
             let web3Instance;
-            let raribleSdk;
             let currentAccount = null;
 
             // Page navigation functions
@@ -181,21 +179,13 @@
                 showMainPage();
             });
 
-            // Step 1: Handle Wallet Connection and SDK Initialization
-            async function initWeb3AndRaribleSDK() {
-                // We'll use a small delay to ensure the script is loaded
-                await new Promise(resolve => setTimeout(resolve, 500));
-
+            // Handle Wallet Connection
+            async function connectWallet() {
                 if (!window.ethereum) {
                     showMessage('error', 'No Ethereum provider found. Please install a wallet like MetaMask.');
                     return;
                 }
                 
-                if (window.RaribleSdk === undefined) {
-                    showMessage('error', 'Failed to load Rarible SDK. Please refresh the page.');
-                    return;
-                }
-
                 try {
                     showMessage('info', 'Connecting to your wallet...');
                     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -206,14 +196,6 @@
                     showMessage('success', 'Wallet successfully connected!');
 
                     web3Instance = new Web3(window.ethereum);
-                    const { createRaribleSdk } = window.RaribleSdk;
-                    // Initialized SDK for Polygon Amoy testnet
-                    raribleSdk = createRaribleSdk(window.ethereum, "polygon_amoy");
-
-                    // You would typically use the API key here if you were making direct API calls.
-                    // For example:
-                    // raribleSdk.configure({ apiKey: RARIBLE_API_KEY });
-                    // However, the browser SDK handles this internally, but it's good practice to have it ready.
 
                 } catch (error) {
                     console.error('User rejected wallet connection or no provider found', error);
@@ -221,7 +203,7 @@
                 }
             }
 
-            connectWalletButton.addEventListener('click', initWeb3AndRaribleSDK);
+            connectWalletButton.addEventListener('click', connectWallet);
 
             // Listen for file selection and update the file name display
             fileInput.addEventListener('change', () => {
@@ -236,12 +218,12 @@
                 }
             });
 
-            // Step 2: Handle Form Submission for Minting
+            // Step 2: Handle Form Submission for Minting via REST API
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                if (!currentAccount || !raribleSdk) {
-                    showMessage('error', 'Wallet not fully connected. Please refresh and try again.');
+                if (!currentAccount) {
+                    showMessage('error', 'Wallet not connected. Please refresh and try again.');
                     resetFormState();
                     return;
                 }
@@ -266,32 +248,54 @@
                 showMessage('info', 'Processing your NFT metadata and file upload...');
                 
                 try {
-                    // --- REAL Rarible SDK Minting Flow ---
+                    // --- SIMULATED Rarible REST API Minting Flow ---
                     
-                    // 1. We will use a dummy IPFS URI here. In a real-world app, you would
-                    //    upload the file and metadata using a service like Pinata or the Rarible SDK's
-                    //    upload method to get a real URI.
-                    const ipfsUri = 'ipfs://bafkreihq55r52s6s5a4j4s5f67u7yv4h3t2v5p4g5t3v5y3u5m5s6d5f7p5d4h4t4'; // A placeholder URI
+                    // 1. In a real application, you would first upload the file to a service like IPFS
+                    //    and get a URI. Here, we use a placeholder.
+                    //    Rarible's API has endpoints for this, but for simplicity, we'll mock it.
+                    const ipfsUri = 'ipfs://bafkreihq55r52s6s5a4j4s5f67u7yv4h3t2v5p4g5t3v5y3u5m5s6d5f7p5d4h4t4'; 
                     
-                    // This is a known ERC-721 contract on the Polygon Amoy testnet.
-                    const collectionAddress = "POLYGON:0xB51240161a0A0B59a4413e1171853b0e1eE5e966";
+                    // 2. We construct the payload for the minting request. This would contain
+                    //    all the metadata about the NFT.
+                    const mintPayload = {
+                        "collectionId": "POLYGON:0x0000000000000000000000000000000000000000", // Placeholder for collection ID
+                        "uri": ipfsUri,
+                        "creator": { "account": `ETHEREUM:${currentAccount}` },
+                        "royalties": [],
+                        "lazyMint": true,
+                        "mint": {
+                            "type": "FIXED_PRICE",
+                            "price": "0.01" // Example price
+                        },
+                        "signatures": [] // Signatures would be generated by your wallet
+                    };
 
-                    showMessage('info', 'Waiting for wallet confirmation to mint the NFT...');
+                    showMessage('info', 'Sending minting request to Rarible...');
 
-                    // 2. Call the Rarible SDK's mint method
-                    const mintResult = await raribleSdk.nft.mint({
-                        collectionId: collectionAddress,
-                        uri: ipfsUri,
+                    // 3. Send the POST request to the Rarible testnet API
+                    const response = await fetch('https://testnet-api.rarible.org/v0.1/polygon/nft/mint', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Rarible-Api-Key': RARIBLE_API_KEY
+                        },
+                        body: JSON.stringify(mintPayload)
                     });
 
-                    // 3. Wait for the transaction to be mined
-                    const transactionHash = await mintResult.transaction.wait();
+                    // Check for a successful response from the API
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'API request failed');
+                    }
                     
-                    showMessage('success', `NFT Minted Successfully! Transaction Hash: <a href="https://amoy.polygonscan.com/tx/${transactionHash}" target="_blank" class="font-bold underline">${transactionHash.substring(0, 6)}...${transactionHash.substring(transactionHash.length - 4)}</a>`);
-
+                    const mintResult = await response.json();
+                    
+                    // The mintResult would contain details like the transaction hash, which you could then display.
+                    showMessage('success', `NFT Minting request submitted! Please check your wallet for a pending transaction.`);
+                    
                 } catch (error) {
                     console.error('Minting failed:', error);
-                    showMessage('error', `Minting failed. Please try again. Error: ${error.message || 'Unknown error'}`);
+                    showMessage('error', `Minting failed. Error: ${error.message || 'Unknown error'}`);
                 } finally {
                     resetFormState();
                 }
