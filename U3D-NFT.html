@@ -31,7 +31,7 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
     <!-- A simple test message -->
-    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #0222</div>
+    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #04</div>
 
     <!-- Main Container -->
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
@@ -129,14 +129,11 @@
     </div>
 
     <!-- Rarible SDK and Web3 Libraries -->
-    <script src="https://unpkg.com/@rarible/sdk@la/dist/browser.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/web3@la/dist/web3.min.js"></script>
+    <script src="https://unpkg.com/@rarible/sdk@latest/dist/browser.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Your Rarible API key goes here:
-            const RARIBLE_API_KEY = "832abdbe-8335-4ec3-a043-bb93ed070c1f"; // <-- PASTE YOUR API KEY HERE
-
             // UI Elements
             const mainPage = document.getElementById('main-page');
             const createNftPage = document.getElementById('create-nft-page');
@@ -149,6 +146,10 @@
             const fileNameDisplay = document.getElementById('file-name');
             const mintButton = document.getElementById('mint-button');
             const messageBox = document.getElementById('message-box');
+
+            // Rarible Testnet API Key
+            // This is the key provided by the user and should be included in authenticated requests.
+            const RARIBLE_API_KEY = "832abdbe-8335-4ec3-a043-bb93ed070c1f";
 
             // Global variables for Web3 and Rarible SDK
             let web3Instance;
@@ -169,7 +170,6 @@
 
             // Event Listeners for Page Navigation
             createNftButton.addEventListener('click', () => {
-                // First, check if a wallet is connected before allowing them to create
                 if (currentAccount) {
                     showCreatePage();
                 } else {
@@ -181,39 +181,47 @@
                 showMainPage();
             });
 
-            // Step 1: Handle Wallet Connection
-            connectWalletButton.addEventListener('click', async () => {
-                // First, check if the Rarible SDK has loaded
+            // Step 1: Handle Wallet Connection and SDK Initialization
+            async function initWeb3AndRaribleSDK() {
+                // We'll use a small delay to ensure the script is loaded
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                if (!window.ethereum) {
+                    showMessage('error', 'No Ethereum provider found. Please install a wallet like MetaMask.');
+                    return;
+                }
+                
                 if (window.RaribleSdk === undefined) {
-                    console.error("Rarible SDK not found on window object. Please refresh the page.");
-                    showMessage('error', 'Wallet connection failed. Please refresh the page and try again.');
+                    showMessage('error', 'Failed to load Rarible SDK. Please refresh the page.');
                     return;
                 }
 
-                if (window.ethereum) {
-                    try {
-                        showMessage('info', 'Connecting to your wallet...');
-                        // Request connection to the user's wallet
-                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                        currentAccount = accounts[0];
-                        walletStatus.textContent = `Connected: ${currentAccount.substring(0, 6)}...${currentAccount.substring(currentAccount.length - 4)}`;
-                        walletStatus.classList.remove('hidden');
-                        connectWalletButton.classList.add('hidden');
-                        showMessage('success', 'Wallet successfully connected!');
+                try {
+                    showMessage('info', 'Connecting to your wallet...');
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    currentAccount = accounts[0];
+                    walletStatus.textContent = `Connected: ${currentAccount.substring(0, 6)}...${currentAccount.substring(currentAccount.length - 4)}`;
+                    walletStatus.classList.remove('hidden');
+                    connectWalletButton.classList.add('hidden');
+                    showMessage('success', 'Wallet successfully connected!');
 
-                        web3Instance = new Web3(window.ethereum);
-                        const { createRaribleSdk } = window.RaribleSdk;
-                        // Initialized SDK for Polygon Amoy net
-                        raribleSdk = createRaribleSdk(window.ethereum, "polygon_amoy");
+                    web3Instance = new Web3(window.ethereum);
+                    const { createRaribleSdk } = window.RaribleSdk;
+                    // Initialized SDK for Polygon Amoy testnet
+                    raribleSdk = createRaribleSdk(window.ethereum, "polygon_amoy");
 
-                    } catch (error) {
-                        console.error('User rejected wallet connection or no provider found', error);
-                        showMessage('error', 'Failed to connect wallet. Please ensure you have a wallet extension installed and try again.');
-                    }
-                } else {
-                    showMessage('error', 'No Ethereum provider found. Please install a wallet like MetaMask.');
+                    // You would typically use the API key here if you were making direct API calls.
+                    // For example:
+                    // raribleSdk.configure({ apiKey: RARIBLE_API_KEY });
+                    // However, the browser SDK handles this internally, but it's good practice to have it ready.
+
+                } catch (error) {
+                    console.error('User rejected wallet connection or no provider found', error);
+                    showMessage('error', 'Failed to connect wallet. Please ensure you have a wallet extension installed and try again.');
                 }
-            });
+            }
+
+            connectWalletButton.addEventListener('click', initWeb3AndRaribleSDK);
 
             // Listen for file selection and update the file name display
             fileInput.addEventListener('change', () => {
@@ -265,7 +273,7 @@
                     //    upload method to get a real URI.
                     const ipfsUri = 'ipfs://bafkreihq55r52s6s5a4j4s5f67u7yv4h3t2v5p4g5t3v5y3u5m5s6d5f7p5d4h4t4'; // A placeholder URI
                     
-                    // This is a known ERC-721 contract on the Polygon Amoy net.
+                    // This is a known ERC-721 contract on the Polygon Amoy testnet.
                     const collectionAddress = "POLYGON:0xB51240161a0A0B59a4413e1171853b0e1eE5e966";
 
                     showMessage('info', 'Waiting for wallet confirmation to mint the NFT...');
@@ -337,4 +345,3 @@
     </script>
 </body>
 </html>
-
