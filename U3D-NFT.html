@@ -31,7 +31,7 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
     <!-- A simple test message -->
-    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #02</div>
+    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #0222</div>
 
     <!-- Main Container -->
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
@@ -129,13 +129,13 @@
     </div>
 
     <!-- Rarible SDK and Web3 Libraries -->
-    <script src="https://unpkg.com/@rarible/sdk@latest/dist/browser.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="https://unpkg.com/@rarible/sdk@la/dist/browser.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@la/dist/web3.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Your Rarible API key goes here:
-            const RARIBLE_API_KEY = ""; // <-- PASTE YOUR API KEY HERE
+            const RARIBLE_API_KEY = "832abdbe-8335-4ec3-a043-bb93ed070c1f"; // <-- PASTE YOUR API KEY HERE
 
             // UI Elements
             const mainPage = document.getElementById('main-page');
@@ -203,7 +203,7 @@
 
                         web3Instance = new Web3(window.ethereum);
                         const { createRaribleSdk } = window.RaribleSdk;
-                        // Initialized SDK for Polygon Amoy testnet
+                        // Initialized SDK for Polygon Amoy net
                         raribleSdk = createRaribleSdk(window.ethereum, "polygon_amoy");
 
                     } catch (error) {
@@ -265,7 +265,7 @@
                     //    upload method to get a real URI.
                     const ipfsUri = 'ipfs://bafkreihq55r52s6s5a4j4s5f67u7yv4h3t2v5p4g5t3v5y3u5m5s6d5f7p5d4h4t4'; // A placeholder URI
                     
-                    // This is a known ERC-721 contract on the Polygon Amoy testnet.
+                    // This is a known ERC-721 contract on the Polygon Amoy net.
                     const collectionAddress = "POLYGON:0xB51240161a0A0B59a4413e1171853b0e1eE5e966";
 
                     showMessage('info', 'Waiting for wallet confirmation to mint the NFT...');
@@ -337,3 +337,4 @@
     </script>
 </body>
 </html>
+
