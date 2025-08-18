@@ -31,7 +31,7 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
     <!-- A simple test message -->
-    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #01</div>
+    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #02</div>
 
     <!-- Main Container -->
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
@@ -135,7 +135,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Your Rarible API key goes here:
-            const RARIBLE_API_KEY = "832abdbe-8335-4ec3-a043-bb93ed070c1f"; // <-- PASTE YOUR API KEY HERE
+            const RARIBLE_API_KEY = ""; // <-- PASTE YOUR API KEY HERE
 
             // UI Elements
             const mainPage = document.getElementById('main-page');
@@ -183,6 +183,13 @@
 
             // Step 1: Handle Wallet Connection
             connectWalletButton.addEventListener('click', async () => {
+                // First, check if the Rarible SDK has loaded
+                if (window.RaribleSdk === undefined) {
+                    console.error("Rarible SDK not found on window object. Please refresh the page.");
+                    showMessage('error', 'Wallet connection failed. Please refresh the page and try again.');
+                    return;
+                }
+
                 if (window.ethereum) {
                     try {
                         showMessage('info', 'Connecting to your wallet...');
@@ -225,8 +232,8 @@
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                if (!currentAccount) {
-                    showMessage('error', 'Please connect your wallet first.');
+                if (!currentAccount || !raribleSdk) {
+                    showMessage('error', 'Wallet not fully connected. Please refresh and try again.');
                     resetFormState();
                     return;
                 }
