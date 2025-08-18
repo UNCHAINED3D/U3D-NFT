@@ -31,7 +31,7 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
     <!-- A simple test message -->
-    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #10 - Final Fix with Corrected Payload</div>
+    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #11 - CSP Fix</div>
 
     <!-- Main Container -->
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
@@ -128,9 +128,6 @@
         </div>
     </div>
 
-    <!-- Web3 Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // UI Elements
@@ -149,8 +146,7 @@
             // Rarible Testnet API Key
             const RARIBLE_API_KEY = "832abdbe-8335-4ec3-a043-bb93ed070c1f";
 
-            // Global variables for Web3
-            let web3Instance;
+            // Global variable for current account
             let currentAccount = null;
 
             // Page navigation functions
@@ -187,14 +183,13 @@
                 
                 try {
                     showMessage('info', 'Connecting to your wallet...');
+                    // Use window.ethereum directly, no need for web3.js
                     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     currentAccount = accounts[0];
                     walletStatus.textContent = `Connected: ${currentAccount.substring(0, 6)}...${currentAccount.substring(currentAccount.length - 4)}`;
                     walletStatus.classList.remove('hidden');
                     connectWalletButton.classList.add('hidden');
                     showMessage('success', 'Wallet successfully connected!');
-
-                    web3Instance = new Web3(window.ethereum);
 
                 } catch (error) {
                     console.error('User rejected wallet connection or no provider found', error);
@@ -250,9 +245,7 @@
                         'X-Rarible-Api-Key': RARIBLE_API_KEY
                     };
                     
-                    // FINAL FIX: Corrected collectionId and creator account format.
-                    // The creator account must have a chain prefix that matches the collection's chain.
-                    // A valid Rarible testnet collection on Polygon is also required.
+                    // The payload remains correct.
                     const mintPayload = {
                         "collectionId": "POLYGON:0x2213b3d1b7147b2c0199081e6a17b2b07e5967ee", // Correct testnet Polygon collection ID
                         "uri": "ipfs://bafkreihq55r52s6s5a4j4s5f67u7yv4h3t2v5p4g5t3v5y3u5m5s6d5f7p5d4h4t4",
