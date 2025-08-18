@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT Creator</title>
+    <!-- Use Tailwind CSS for a modern, responsive design -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .gradient-button {
+            background-image: linear-gradient(to right, #6EE7B7 0%, #3B82F6 51%, #6EE7B7 100%);
+            background-size: 200% auto;
+            transition: 0.5s;
+        }
+        .gradient-button:hover {
+            background-position: right center; /* change the direction of the change here */
+            color: #fff;
+            text-decoration: none;
+        }
+        .container {
+            max-width: 60rem; /* Use a fixed max-width for better control on large screens */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <!-- Main Container -->
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
+
+        <!-- Main Page Section (visible by default) -->
+        <div id="main-page" class="space-y-6">
+            <!-- Header Section -->
+            <header class="text-center mb-8">
+                <h1 class="text-4xl font-extrabold text-blue-600 mb-2">My NFT Collection</h1>
+                <p class="text-gray-500">View and create your digital collectibles.</p>
+            </header>
+
+            <!-- Wallet and User Status -->
+            <div class="flex justify-between items-center mb-6">
+                <p id="wallet-status" class="text-sm text-gray-500 hidden"></p>
+                <button id="connect-wallet-button" class="py-2 px-4 rounded-lg shadow-sm text-sm font-medium text-white gradient-button">
+                    Connect Wallet
+                </button>
+            </div>
+
+            <!-- Main Action Buttons -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button id="create-nft-button" class="py-4 px-6 rounded-lg shadow-md text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200">
+                    Create a New NFT
+                </button>
+                <button class="py-4 px-6 rounded-lg shadow-md text-sm font-semibold text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors duration-200">
+                    View My NFTs
+                </button>
+            </div>
+
+            <!-- Placeholder for NFT listings -->
+            <div class="mt-8 text-center text-gray-400 p-4 border border-dashed rounded-lg">
+                <p>NFT listings will appear here once connected to a wallet.</p>
+            </div>
+        </div>
+
+        <!-- NFT Creation Page Section (hidden by default) -->
+        <div id="create-nft-page" class="space-y-6 hidden">
+            <!-- Header for Creation Page -->
+            <header class="mb-6 flex items-center justify-between">
+                <button id="back-button" class="text-gray-500 hover:text-gray-700 transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                </button>
+                <h2 class="text-2xl font-bold text-blue-600">Create a New NFT</h2>
+                <div></div> <!-- Placeholder for alignment -->
+            </header>
+
+            <!-- NFT Creation Form -->
+            <form id="nft-form" class="space-y-6">
+
+                <!-- File Upload Section -->
+                <div class="space-y-2">
+                    <label for="file-upload" class="block text-sm font-medium text-gray-700">Upload your artwork</label>
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer hover:bg-gray-50 transition-colors duration-200">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m-4-4l-1.621-1.621a4 4 0 00-5.656 0L16 32m0 0l-4 4m4-4l-1.621-1.621a4 4 0 00-5.656 0L4 32m0 0l1.621 1.621a4 4 0 015.656 0L28 32m0 0l4 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="flex text-sm text-gray-600">
+                                <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                    <span>Upload a file</span>
+                                    <input id="file-upload" name="file-upload" type="file" class="sr-only" accept="image/*,video/*,audio/*">
+                                </label>
+                                <p class="pl-1">or drag and drop</p>
+                            </div>
+                            <p id="file-name" class="text-xs text-gray-500">PNG, JPG, GIF, MP4, MP3 up to 10MB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NFT Metadata Inputs -->
+                <div class="space-y-2">
+                    <label for="nft-title" class="block text-sm font-medium text-gray-700">Title</label>
+                    <input type="text" id="nft-title" name="nft-title" required placeholder="My Awesome NFT" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3">
+                </div>
+
+                <div class="space-y-2">
+                    <label for="nft-description" class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea id="nft-description" name="nft-description" rows="3" required placeholder="A brief description of your masterpiece..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="mint-button" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                    Mint NFT
+                </button>
+            </form>
+        </div>
+
+        <!-- Dynamic Message Box for Feedback -->
+        <div id="message-box" class="mt-6 hidden">
+            <!-- Content will be injected here -->
+        </div>
+    </div>
+
+    <!-- Rarible SDK and Web3 Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@rarible/sdk@latest/dist/browser/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // UI Elements
+            const mainPage = document.getElementById('main-page');
+            const createNftPage = document.getElementById('create-nft-page');
+            const connectWalletButton = document.getElementById('connect-wallet-button');
+            const createNftButton = document.getElementById('create-nft-button');
+            const backButton = document.getElementById('back-button');
+            const walletStatus = document.getElementById('wallet-status');
+            const form = document.getElementById('nft-form');
+            const fileInput = document.getElementById('file-upload');
+            const fileNameDisplay = document.getElementById('file-name');
+            const mintButton = document.getElementById('mint-button');
+            const messageBox = document.getElementById('message-box');
+
+            // Global variables for Web3 and Rarible SDK
+            let web3Instance;
+            let raribleSdk;
+            let currentAccount = null;
+
+            // Page navigation functions
+            function showMainPage() {
+                mainPage.classList.remove('hidden');
+                createNftPage.classList.add('hidden');
+            }
+
+            function showCreatePage() {
+                mainPage.classList.add('hidden');
+                createNftPage.classList.remove('hidden');
+                messageBox.classList.add('hidden'); // Clear previous messages
+            }
+
+            // Event Listeners for Page Navigation
+            createNftButton.addEventListener('click', () => {
+                // First, check if a wallet is connected before allowing them to create
+                if (currentAccount) {
+                    showCreatePage();
+                } else {
+                    showMessage('info', 'Please connect your wallet first to create an NFT.');
+                }
+            });
+
+            backButton.addEventListener('click', () => {
+                showMainPage();
+            });
+
+            // Step 1: Handle Wallet Connection
+            connectWalletButton.addEventListener('click', async () => {
+                if (window.ethereum) {
+                    try {
+                        showMessage('info', 'Connecting to your wallet...');
+                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        currentAccount = accounts[0];
+                        walletStatus.textContent = `Connected: ${currentAccount.substring(0, 6)}...${currentAccount.substring(currentAccount.length - 4)}`;
+                        walletStatus.classList.remove('hidden');
+                        connectWalletButton.classList.add('hidden');
+                        showMessage('success', 'Wallet successfully connected!');
+
+                        web3Instance = new Web3(window.ethereum);
+                        const { createRaribleSdk } = window.RaribleSdk;
+                        raribleSdk = createRaribleSdk(window.ethereum, "prod"); 
+
+                    } catch (error) {
+                        console.error('User rejected wallet connection or no provider found', error);
+                        showMessage('error', 'Failed to connect wallet. Please ensure you have a wallet extension installed and try again.');
+                    }
+                } else {
+                    showMessage('error', 'No Ethereum provider found. Please install a wallet like MetaMask.');
+                }
+            });
+
+            // Listen for file selection and update the file name display
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length > 0) {
+                    fileNameDisplay.textContent = fileInput.files[0].name;
+                    fileNameDisplay.classList.remove('text-gray-500');
+                    fileNameDisplay.classList.add('text-green-600');
+                } else {
+                    fileNameDisplay.textContent = 'PNG, JPG, GIF, MP4, MP3 up to 10MB';
+                    fileNameDisplay.classList.remove('text-green-600');
+                    fileNameDisplay.classList.add('text-gray-500');
+                }
+            });
+
+            // Step 2: Handle Form Submission for Minting
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                if (!currentAccount) {
+                    showMessage('error', 'Please connect your wallet first.');
+                    resetFormState();
+                    return;
+                }
+                
+                // UI state change
+                mintButton.disabled = true;
+                mintButton.textContent = 'Minting...';
+                mintButton.classList.add('bg-blue-400', 'cursor-not-allowed');
+                messageBox.innerHTML = '';
+                messageBox.classList.add('hidden');
+
+                const title = document.getElementById('nft-title').value;
+                const description = document.getElementById('nft-description').value;
+                const file = fileInput.files[0];
+
+                if (!file) {
+                    showMessage('error', 'Please select a file to mint.');
+                    resetFormState();
+                    return;
+                }
+
+                showMessage('info', 'Processing your NFT metadata and file upload...');
+                
+                try {
+                    // --- Rarible SDK Minting Flow (Simulated) ---
+
+                    // 1. Upload file to IPFS (Rarible SDK handles this)
+                    // The SDK has methods to upload files and metadata, like:
+                    // const uri = await raribleSdk.nft.uploadMetadata(metaData);
+                    showMessage('info', 'Uploading file and metadata to IPFS...');
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    const ipfsUri = 'ipfs://fake_ipfs_hash_for_your_asset';
+
+                    // 2. Prepare and send the minting transaction
+                    // The SDK's minting method would look something like this:
+                    // const mintResult = await raribleSdk.nft.mint({
+                    //   collectionId: 'ETHEREUM:0x...your-collection-address',
+                    //   uri: ipfsUri,
+                    //   tokenId: '1', // Or use a unique ID
+                    // });
+                    // const transaction = mintResult.transaction;
+                    // const txHash = await transaction.wait();
+
+                    showMessage('info', 'Waiting for wallet confirmation and blockchain transaction...');
+                    await new Promise(resolve => setTimeout(resolve, 4000));
+
+                    // Simulation of a successful transaction
+                    const transactionHash = '0x' + Math.random().toString(16).substring(2, 12) + '...';
+                    
+                    showMessage('success', `NFT Minted Successfully! Transaction Hash: <a href="#" class="font-bold underline">${transactionHash}</a>`);
+
+                } catch (error) {
+                    console.error('Minting failed:', error);
+                    showMessage('error', `Minting failed. Please try again. Error: ${error.message || 'Unknown error'}`);
+                } finally {
+                    resetFormState();
+                }
+            });
+
+            /**
+             * Resets the button and form state after the operation.
+             */
+            function resetFormState() {
+                mintButton.disabled = false;
+                mintButton.textContent = 'Mint NFT';
+                mintButton.classList.remove('bg-blue-400', 'cursor-not-allowed');
+            }
+
+            /**
+             * Displays a message to the user.
+             * @param {'success'|'error'|'info'} type The type of message.
+             * @param {string} message The message content.
+             */
+            function showMessage(type, message) {
+                messageBox.classList.remove('hidden');
+                let colorClass = '';
+                switch (type) {
+                    case 'success':
+                        colorClass = 'bg-green-100 border-green-400 text-green-700';
+                        break;
+                    case 'error':
+                        colorClass = 'bg-red-100 border-red-400 text-red-700';
+                        break;
+                    case 'info':
+                        colorClass = 'bg-blue-100 border-blue-400 text-blue-700';
+                        break;
+                }
+                messageBox.innerHTML = `
+                    <div class="p-4 rounded-lg border ${colorClass}">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <!-- Icon based on type -->
+                                ${type === 'success' ? `<svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>` : ''}
+                                ${type === 'error' ? `<svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>` : ''}
+                                ${type === 'info' ? `<svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>` : ''}
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium">${message}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
