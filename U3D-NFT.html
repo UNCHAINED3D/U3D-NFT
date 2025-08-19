@@ -31,7 +31,7 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
     <!-- A simple test message -->
-    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #lasttime</div>
+    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #sepoia 01</div>
 
     <!-- Main Container -->
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
@@ -182,7 +182,7 @@
                 showMessage('info','Requesting wallet signature...');
 
                 try {
-                    const domain = { name:"Rarible Protocol", version:"3", chainId:80002 };
+                    const domain = { name:"Rarible Protocol", version:"3", chainId:11155111 };
                     const types = {
                         Part:[{name:"account",type:"address"},{name:"value",type:"uint96"}],
                         Royalty:[{name:"account",type:"address"},{name:"value",type:"uint92"}],
@@ -197,7 +197,7 @@
                     const message = {
                         user:currentAccount,
                         creator:{account:currentAccount,value:10000},
-                        collectionId:"0x825b0e01701545ca4eb0d582e7188ae948701dd4",
+                        collectionId:"0x0199ba133692c6d0279d04189e12ecd929d0b77f",
                         uri:"https://raw.githubusercontent.com/UNCHAINED3D/SolarPunk-MiniGame/refs/heads/main/chicken_coop_sprite.png",
                         royalties:[]
                     };
@@ -211,15 +211,15 @@
 
                     const mintPayload = {
                         "@type":"MINT_AND_TRANSFER",
-                        collectionId:`POLYGON-AMOY:${message.collectionId}`,
-                        creator:{account:`POLYGON:${currentAccount}`},
+                        collectionId:`ETHEREUM:${message.collectionId}`,
+                        creator:{account:`ETHEREUM:${currentAccount}`},
                         uri:message.uri,
                         royalties:[],
                         isTestnet:true,
                         signatures:[signature]
                     };
 
-                    const response = await fetch('https://104.26.3.77/v0.1/polygon/nft/mint',{
+                    const response = await fetch('https://api-dev.rarible.com/v0.1/protocol/v0.1/ethereum/nft/mints',{
                         method:'POST',
                         headers:{
                             "Content-Type":"application/json",
