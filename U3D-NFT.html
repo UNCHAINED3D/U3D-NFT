@@ -31,7 +31,7 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
     <!-- A simple test message -->
-    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #lasttime</div>
+    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #10:49AM</div>
 
     <!-- Main Container -->
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
@@ -84,23 +84,11 @@
             <!-- NFT Creation Form -->
             <form id="nft-form" class="space-y-6">
 
-                <!-- File Upload Section -->
+                <!-- Image Preview Section -->
                 <div class="space-y-2">
-                    <label for="file-upload" class="block text-sm font-medium text-gray-700">Upload your artwork</label>
-                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer hover:bg-gray-50 transition-colors duration-200">
-                        <div class="space-y-1 text-center">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m-4-4l-1.621-1.621a4 4 0 00-5.656 0L16 32m0 0l-4 4m4-4l-1.621-1.621a4 4 0 00-5.656 0L4 32m0 0l1.621 1.621a4 4 0 015.656 0L28 32m0 0l4 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <div class="flex text-sm text-gray-600">
-                                <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                                    <span>Upload a file</span>
-                                    <input id="file-upload" name="file-upload" type="file" class="sr-only" accept="image/*,video/*,audio/*">
-                                </label>
-                                <p class="pl-1">or drag and drop</p>
-                            </div>
-                            <p id="file-name" class="text-xs text-gray-500">PNG, JPG, GIF, MP4, MP3 up to 10MB</p>
-                        </div>
+                    <label class="block text-sm font-medium text-gray-700">Artwork Preview</label>
+                    <div class="mt-1 flex justify-center p-4 border-2 border-gray-300 border-dashed rounded-md">
+                        <img src="https://raw.githubusercontent.com/UNCHAINED3D/SolarPunk-MiniGame/refs/heads/main/chicken_coop_sprite.png" alt="Chicken Coop" class="max-h-48 rounded-lg">
                     </div>
                 </div>
 
@@ -137,8 +125,6 @@
             const backButton = document.getElementById('back-button');
             const walletStatus = document.getElementById('wallet-status');
             const form = document.getElementById('nft-form');
-            const fileInput = document.getElementById('file-upload');
-            const fileNameDisplay = document.getElementById('file-name');
             const mintButton = document.getElementById('mint-button');
             const messageBox = document.getElementById('message-box');
             const RARIBLE_API_KEY = "6a682c4d-4b3a-4cc3-99c9-591e49ab4469";
@@ -181,18 +167,6 @@
 
             connectWalletButton.addEventListener('click', connectWallet);
 
-            fileInput.addEventListener('change', () => {
-                if (fileInput.files.length > 0) {
-                    fileNameDisplay.textContent = fileInput.files[0].name;
-                    fileNameDisplay.classList.remove('text-gray-500');
-                    fileNameDisplay.classList.add('text-green-600');
-                } else {
-                    fileNameDisplay.textContent = 'PNG, JPG, GIF, MP4, MP3 up to 10MB';
-                    fileNameDisplay.classList.remove('text-green-600');
-                    fileNameDisplay.classList.add('text-gray-500');
-                }
-            });
-
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (!currentAccount) { showMessage('error','Wallet not connected'); resetFormState(); return; }
@@ -202,8 +176,7 @@
                 mintButton.classList.add('bg-blue-400','cursor-not-allowed');
                 messageBox.classList.add('hidden');
 
-                const file = fileInput.files[0];
-                if (!file) { showMessage('error','Select a file to mint'); resetFormState(); return; }
+                // We are using a static image, so no file check is needed.
 
                 showMessage('info','Requesting wallet signature...');
 
@@ -224,7 +197,7 @@
                         user:currentAccount,
                         creator:{account:currentAccount,value:10000},
                         collectionId:"0x825b0e01701545ca4eb0d582e7188ae948701dd4",
-                        uri:"https://unchained3d.github.io/SolarPunk-MiniGame/food_sprite.png",
+                        uri:"https://raw.githubusercontent.com/UNCHAINED3D/SolarPunk-MiniGame/refs/heads/main/chicken_coop_sprite.png",
                         royalties:[]
                     };
 
@@ -295,8 +268,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
