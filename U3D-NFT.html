@@ -32,7 +32,7 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
     <!-- A simple test message -->
-    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #sepolia addeventr</div>
+    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #sepolia addeventr AAAAALLLL ofem</div>
 
     <!-- Main Container -->
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
@@ -143,12 +143,12 @@
                 messageBox.classList.add('hidden');
             }
 
-            createNftButton.adentListener('click', () => {
+            createNftButton.addEventListener('click', () => {
                 if (currentAccount) showCreatePage();
                 else showMessage('info', 'Please connect your wallet first.');
             });
 
-            backButton.adentListener('click', showMainPage);
+            backButton.addEventListener('click', showMainPage);
 
             async function connectWallet() {
                 if (!window.ethereum) return showMessage('error', 'No Ethereum provider found.');
@@ -167,7 +167,7 @@
                 }
             }
 
-            connectWalletButton.adentListener('click', connectWallet);
+            connectWalletButton.addEventListener('click', connectWallet);
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -270,7 +270,3 @@
     </script>
 </body>
 </html>
-
-
-
-
