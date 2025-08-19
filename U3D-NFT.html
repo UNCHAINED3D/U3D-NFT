@@ -119,7 +119,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.adentListener('DOMContentLoaded', () => {
             const mainPage = document.getElementById('main-page');
             const createNftPage = document.getElementById('create-nft-page');
             const connectWalletButton = document.getElementById('connect-wallet-button');
@@ -143,12 +143,12 @@
                 messageBox.classList.add('hidden');
             }
 
-            createNftButton.addEventListener('click', () => {
+            createNftButton.adentListener('click', () => {
                 if (currentAccount) showCreatePage();
                 else showMessage('info', 'Please connect your wallet first.');
             });
 
-            backButton.addEventListener('click', showMainPage);
+            backButton.adentListener('click', showMainPage);
 
             async function connectWallet() {
                 if (!window.ethereum) return showMessage('error', 'No Ethereum provider found.');
@@ -167,7 +167,7 @@
                 }
             }
 
-            connectWalletButton.addEventListener('click', connectWallet);
+            connectWalletButton.adentListener('click', connectWallet);
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -220,7 +220,7 @@
                         signatures:[signature]
                     };
 
-                    const response = await fetch('https://api-dev.rarible.com/v0.1/protocol/v0.1/ethereum/nft/mints',{
+                    const response = await fetch('https://api.rarible.com/v0.1/protocol/v0.1/ethereum/nft/mints',{
                         method:'POST',
                         headers:{
                             "Content-Type":"application/json",
@@ -270,3 +270,4 @@
     </script>
 </body>
 </html>
+
