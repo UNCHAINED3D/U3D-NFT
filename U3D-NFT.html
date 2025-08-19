@@ -31,7 +31,7 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
     <!-- A simple test message -->
-    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #10:49AM</div>
+    <div class="fixed top-4 left-4 text-xs font-bold text-gray-400">TEST #10:53AM</div>
 
     <!-- Main Container -->
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
@@ -218,7 +218,7 @@
                         signatures:[signature]
                     };
 
-                    const response = await fetch('https://protocol-api.rarible.org/v0.1/polygon/nft/mint',{
+                    const response = await fetch('https://api.rarible.org/v0.1/polygon/nft/mint',{
                         method:'POST',
                         headers:{
                             "Content-Type":"application/json",
